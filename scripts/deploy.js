@@ -6,53 +6,48 @@ async function main() {
   const deployment = await deployFullSuiteFixture();
 
   console.log(deployment);
-  console.log("\n~~ Accounts ~~");
-  console.log("Deployer: ", deployment.accounts.deployer.address);
-  console.log("Token Issuer: ", deployment.accounts.tokenIssuer.address);
-  console.log("Token Agent: ", deployment.accounts.tokenAgent.address);
-  console.log("Token Admin: ", deployment.accounts.tokenAdmin.address);
-  console.log("Claim Issuer: ", deployment.accounts.claimIssuer.address);
+  console.log("\n~~ 账户信息 ~~");
+  console.log("部署者: ", deployment.accounts.deployer.address);
+  console.log("代币发行方: ", deployment.accounts.tokenIssuer.address);
+  console.log("代币代理: ", deployment.accounts.tokenAgent.address);
+  console.log("代币管理员: ", deployment.accounts.tokenAdmin.address);
+  console.log("声明发行方: ", deployment.accounts.claimIssuer.address);
   console.log(
-    "Claim Issuer Signing Key: ",
+    "声明发行方签名密钥: ",
     deployment.accounts.claimIssuerSigningKey.address
   );
-  console.log("Alice Action Key: ", deployment.accounts.aliceActionKey.address);
-  console.log("Alice Wallet: ", deployment.accounts.aliceWallet.address);
-  console.log("Bob WAllet: ", deployment.accounts.bobWallet.address);
-  console.log("Charlie Wallet: ", deployment.accounts.charlieWallet.address);
-  console.log("David Wallet: ", deployment.accounts.davidWallet.address);
-  console.log("Another Wallet: ", deployment.accounts.anotherWallet.address);
-  console.log("\n~~ Identities ~~");
-  console.log("Alice Identity: ", deployment.identities.aliceIdentity.address);
-  console.log("Bob Identity: ", deployment.identities.bobIdentity.address);
+  console.log("Alice 操作密钥: ", deployment.accounts.aliceActionKey.address);
+  console.log("Alice 钱包: ", deployment.accounts.aliceWallet.address);
+  console.log("Bob 钱包: ", deployment.accounts.bobWallet.address);
+  console.log("Charlie 钱包: ", deployment.accounts.charlieWallet.address);
+  console.log("David 钱包: ", deployment.accounts.davidWallet.address);
+  console.log("其他钱包: ", deployment.accounts.anotherWallet.address);
+  console.log("\n~~ 身份信息 ~~");
+  console.log("Alice 身份: ", deployment.identities.aliceIdentity.address);
+  console.log("Bob 身份: ", deployment.identities.bobIdentity.address);
+  console.log("Charlie 身份: ", deployment.identities.charlieIdentity.address);
+  console.log("\n~~ 合约套件 ~~");
+  console.log("声明发行方合约: ", deployment.suite.claimIssuerContract.address);
+  console.log("声明主题注册表: ", deployment.suite.claimTopicsRegistry.address);
   console.log(
-    "Charlie Identity: ",
-    deployment.identities.charlieIdentity.address
-  );
-  console.log("\n~~ Suite ~~");
-  console.log(
-    "Claim Issuer Contract: ",
-    deployment.suite.claimIssuerContract.address
-  );
-  console.log(
-    "Claim Topics Registry: ",
-    deployment.suite.claimTopicsRegistry.address
-  );
-  console.log(
-    "Identity Registry Storage: ",
+    "身份注册存储: ",
     deployment.suite.identityRegistryStorage.address
   );
-  console.log("Basic Compliance: ", deployment.suite.basicCompliance.address);
-  console.log("Identity Registry: ", deployment.suite.identityRegistry.address);
-  console.log("TokenOID: ", deployment.suite.tokenOID.address);
-  console.log("Token: ", deployment.suite.token.address);
+  console.log("基础合规合约: ", deployment.suite.basicCompliance.address);
+  console.log("身份注册表: ", deployment.suite.identityRegistry.address);
+  console.log("代币OID: ", deployment.suite.tokenOID.address);
+  console.log("代币合约: ", deployment.suite.token.address);
   console.log("\n--- --- --- --- ---");
-  console.log("Deployment completed!");
+  console.log("部署完成!");
 }
 
 main()
-  .then(() => process.exit(0))
+  .then(() => {
+    console.log("部署完成!");
+    // 让程序自然退出，状态码为 0（成功）
+  })
   .catch((error) => {
     console.error(error);
-    process.exit(1);
+    // 设置退出码为 1（错误），但不直接调用 process.exit()
+    process.exitCode = 1;
   });

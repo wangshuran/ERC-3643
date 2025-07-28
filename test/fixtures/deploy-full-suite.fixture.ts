@@ -4,6 +4,11 @@ import OnchainID from "@onchain-id/solidity";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { AGENT_ROLE, TOKEN_ROLE } from "../utils";
 
+// 添加检查
+console.log("OnchainID:", OnchainID);
+console.log("OnchainID.contracts:", OnchainID?.contracts);
+console.log("OnchainID.contracts.Identity:", OnchainID?.contracts?.Identity);
+
 export async function deployIdentityProxy(
   implementationAuthority: Contract["address"],
   managementKey: string,
@@ -19,6 +24,27 @@ export async function deployIdentityProxy(
 }
 
 export async function deployFullSuiteFixture() {
+  const network = await ethers.provider.getNetwork();
+  console.log("连接到网络:", network);
+  console.log("Provider URL:", ethers.provider.connection.url);
+
+  const signers = await ethers.getSigners();
+  console.log("可用签名者数:", signers.length);
+
+  // 检查前几个账户的余额
+  for (let i = 0; i < Math.min(5, signers.length); i++) {
+    const balance = await signers[i].getBalance();
+    console.log(
+      `账户 ${i} (${signers[i].address}) 余额: ${ethers.utils.formatEther(
+        balance
+      )} ETH`
+    );
+  }
+
+  if (signers.length < 10) {
+    throw new Error(`需要10个账户, 但是只有 ${signers.length}.`);
+  }
+
   const [
     deployer,
     tokenIssuer,
@@ -31,6 +57,16 @@ export async function deployFullSuiteFixture() {
     davidWallet,
     anotherWallet,
   ] = await ethers.getSigners();
+
+  // 添加关键变量检查
+  if (!tokenIssuer) {
+    throw new Error("tokenIssuer is undefined");
+  }
+
+  if (!claimIssuer) {
+    throw new Error("claimIssuer is undefined");
+  }
+
   const claimIssuerSigningKey = ethers.Wallet.createRandom();
   const aliceActionKey = ethers.Wallet.createRandom();
 
@@ -40,11 +76,36 @@ export async function deployFullSuiteFixture() {
     deployer
   ).deploy(deployer.address, true);
 
+  console.log("identityImplementation:", identityImplementation);
+  console.log(
+    "identityImplementation.address:",
+    identityImplementation?.address
+  );
+  if (!identityImplementation || !identityImplementation.address) {
+    throw new Error("部署失败 identityImplementation");
+  }
+
   const identityImplementationAuthority = await new ethers.ContractFactory(
     OnchainID.contracts.ImplementationAuthority.abi,
     OnchainID.contracts.ImplementationAuthority.bytecode,
     deployer
   ).deploy(identityImplementation.address);
+
+  console.log(
+    "identityImplementationAuthority:",
+    identityImplementationAuthority
+  );
+  console.log(
+    "identityImplementationAuthority.address:",
+    identityImplementationAuthority?.address
+  );
+
+  if (
+    !identityImplementationAuthority ||
+    !identityImplementationAuthority.address
+  ) {
+    throw new Error("部署失败 identityImplementationAuthority");
+  }
 
   const ClaimTopicsRegistry = await ethers.getContractFactory(
     "ClaimTopicsRegistry"
