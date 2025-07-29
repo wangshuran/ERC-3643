@@ -1,16 +1,15 @@
-// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.17;
 
 import "@onchain-id/solidity/contracts/interface/IIdentity.sol";
 
 interface IIdentityRegistryStorage {
-    /// events
+    // events
 
     /**
-     *  this event is emitted when an Identity is registered into the storage contract.
-     *  the event is emitted by the 'registerIdentity' function
-     *  `investorAddress` is the address of the investor's wallet
-     *  `identity` is the address of the Identity smart contract (onchainID)
+     *  当一个身份被注册到存储合约中时发出此事件。
+     *  该事件由 'addIdentityToStorage' 函数触发。
+     *  `investorAddress` 是投资者钱包的地址。
+     *  `identity` 是身份智能合约的地址（OnchainID）。
      */
     event IdentityStored(
         address indexed investorAddress,
@@ -18,10 +17,10 @@ interface IIdentityRegistryStorage {
     );
 
     /**
-     *  this event is emitted when an Identity is removed from the storage contract.
-     *  the event is emitted by the 'deleteIdentity' function
-     *  `investorAddress` is the address of the investor's wallet
-     *  `identity` is the address of the Identity smart contract (onchainID)
+     *  当一个身份从存储合约中移除时发出此事件。
+     *  该事件由 'removeIdentityFromStorage' 函数触发。
+     *  `investorAddress` 是投资者钱包的地址。
+     *  `identity` 是身份智能合约的地址（OnchainID）。
      */
     event IdentityUnstored(
         address indexed investorAddress,
@@ -29,10 +28,10 @@ interface IIdentityRegistryStorage {
     );
 
     /**
-     *  this event is emitted when an Identity has been updated
-     *  the event is emitted by the 'updateIdentity' function
-     *  `oldIdentity` is the old Identity contract's address to update
-     *  `newIdentity` is the new Identity contract's
+     *  当一个身份被更新时发出此事件。
+     *  该事件由 'modifyStoredIdentity' 函数触发。
+     *  `oldIdentity` 是要更新的旧身份合约的地址。
+     *  `newIdentity` 是新身份合约的地址。
      */
     event IdentityModified(
         IIdentity indexed oldIdentity,
@@ -40,10 +39,10 @@ interface IIdentityRegistryStorage {
     );
 
     /**
-     *  this event is emitted when an Identity's country has been updated
-     *  the event is emitted by the 'updateCountry' function
-     *  `investorAddress` is the address on which the country has been updated
-     *  `country` is the numeric code (ISO 3166-1) of the new country
+     *  当一个身份的国家被更新时发出此事件。
+     *  该事件由 'modifyStoredInvestorCountry' 函数触发。
+     *  `investorAddress` 是其国家被更新的地址。
+     *  `country` 是新国家的数字代码（ISO 3166-1）。
      */
     event CountryModified(
         address indexed investorAddress,
@@ -51,20 +50,20 @@ interface IIdentityRegistryStorage {
     );
 
     /**
-     *  this event is emitted when an Identity Registry is bound to the storage contract
-     *  the event is emitted by the 'addIdentityRegistry' function
-     *  `identityRegistry` is the address of the identity registry added
+     *  当一个身份注册表被绑定到存储合约时发出此事件。
+     *  该事件由 'bindIdentityRegistry' 函数触发。
+     *  `identityRegistry` 是添加的身份注册表的地址。
      */
     event IdentityRegistryBound(address indexed identityRegistry);
 
     /**
-     *  this event is emitted when an Identity Registry is unbound from the storage contract
-     *  the event is emitted by the 'removeIdentityRegistry' function
-     *  `identityRegistry` is the address of the identity registry removed
+     *  当一个身份注册表从存储合约中解绑时发出此事件。
+     *  该事件由 'unbindIdentityRegistry' 函数触发。
+     *  `identityRegistry` 是移除的身份注册表的地址。
      */
     event IdentityRegistryUnbound(address indexed identityRegistry);
 
-    /// functions
+    // functions
 
     /**
      *  @dev adds an identity contract corresponding to a user address in the storage.

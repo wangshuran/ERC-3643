@@ -1,14 +1,13 @@
-// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.17;
 
 import "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
 
 interface IClaimIssuersRegistry {
     /**
-     *  this event is emitted when a claim issuer is added in the registry.
-     *  the event is emitted by the addClaimIssuer function
-     *  `claimIssuer` is the address of the claim issuer's ClaimIssuer contract
-     *  `claimTopics` is the set of claims that the claim issuer is allowed to emit
+     * 当一个声明发行者被添加到注册表中时发出此事件。
+     * 该事件由 addClaimIssuer 函数触发。
+     * `claimIssuer` 是声明发行者的 ClaimIssuer 合约地址。
+     * `claimTopics` 是声明发行者被允许发出的声明集。
      */
     event ClaimIssuerAdded(
         IClaimIssuer indexed claimIssuer,
@@ -16,17 +15,17 @@ interface IClaimIssuersRegistry {
     );
 
     /**
-     *  this event is emitted when a claim issuer is removed from the registry.
-     *  the event is emitted by the removeClaimIssuer function
-     *  `claimIssuer` is the address of the claim issuer's ClaimIssuer contract
+     * 当一个声明发行者从注册表中移除时发出此事件。
+     * 该事件由 removeClaimIssuer 函数触发。
+     * `claimIssuer` 是声明发行者的 ClaimIssuer 合约地址。
      */
     event ClaimIssuerRemoved(IClaimIssuer indexed claimIssuer);
 
     /**
-     *  this event is emitted when the set of claim topics is changed for a given claim issuer.
-     *  the event is emitted by the updateIssuerClaimTopics function
-     *  `claimIssuer` is the address of the claim issuer's ClaimIssuer contract
-     *  `claimTopics` is the set of claims that the claim issuer is allowed to emit
+     * 当给定的声明发行者的声明主题集发生变化时发出此事件。
+     * 该事件由 updateIssuerClaimTopics 函数触发。
+     * `claimIssuer` 是声明发行者的 ClaimIssuer 合约地址。
+     * `claimTopics` 是声明发行者被允许发出的声明集。
      */
     event ClaimTopicsUpdated(
         IClaimIssuer indexed claimIssuer,
@@ -34,15 +33,15 @@ interface IClaimIssuersRegistry {
     );
 
     /**
-     *  @dev registers a ClaimIssuer contract as claim claim issuer.
-     *  Requires that a ClaimIssuer contract doesn't already exist
-     *  Requires that the claimTopics set is not empty
-     *  Requires that there is no more than 15 claimTopics
-     *  Requires that there is no more than 50 Claim issuers
-     *  @param _claimIssuer The ClaimIssuer contract address of the claim claim issuer.
-     *  @param _claimTopics the set of claim topics that the claim issuer is allowed to emit
-     *  This function can only be called by the owner of the Claim Issuers Registry contract
-     *  emits a `ClaimIssuerAdded` event
+     * @dev 注册一个 ClaimIssuer 合约为声明发行者。
+     * 要求不存在相同的 ClaimIssuer 合约。
+     * 要求 claimTopics 集不为空。
+     * 要求 claimTopics 不超过15个。
+     * 要求 Claim 发行者不超过50个。
+     * @param _claimIssuer 声明发行者的 ClaimIssuer 合约地址。
+     * @param _claimTopics 声明发行者被允许发出的声明主题集。
+     * 此函数只能由 Claim Issuers Registry 合约的所有者调用。
+     * 触发 `ClaimIssuerAdded` 事件。
      */
     function addClaimIssuer(
         IClaimIssuer _claimIssuer,
@@ -50,23 +49,23 @@ interface IClaimIssuersRegistry {
     ) external;
 
     /**
-     *  @dev Removes the ClaimIssuer contract of a claim claim issuer.
-     *  Requires that the claim issuer contract to be registered first
-     *  @param _claimIssuer the claim issuer to remove.
-     *  This function can only be called by the owner of the Claim Issuers Registry contract
-     *  emits a `ClaimIssuerRemoved` event
+     * @dev 移除一个声明发行者的 ClaimIssuer 合约。
+     * 要求该声明发行者合约已先注册。
+     * @param _claimIssuer 要移除的声明发行者。
+     * 此函数只能由 Claim Issuers Registry 合约的所有者调用。
+     * 触发 `ClaimIssuerRemoved` 事件。
      */
     function removeClaimIssuer(IClaimIssuer _claimIssuer) external;
 
     /**
-     *  @dev Updates the set of claim topics that a claim issuer is allowed to emit.
-     *  Requires that this ClaimIssuer contract already exists in the registry
-     *  Requires that the provided claimTopics set is not empty
-     *  Requires that there is no more than 15 claimTopics
-     *  @param _claimIssuer the claim issuer to update.
-     *  @param _claimTopics the set of claim topics that the claim issuer is allowed to emit
-     *  This function can only be called by the owner of the Claim Issuers Registry contract
-     *  emits a `ClaimTopicsUpdated` event
+     * @dev 更新声明发行者被允许发出的声明主题集。
+     * 要求此 ClaimIssuer 合约已在注册表中存在。
+     * 要求提供的 claimTopics 集不为空。
+     * 要求 claimTopics 不超过15个。
+     * @param _claimIssuer 要更新的声明发行者。
+     * @param _claimTopics 声明发行者被允许发出的声明主题集。
+     * 此函数只能由 Claim Issuers Registry 合约的所有者调用。
+     * 触发 `ClaimTopicsUpdated` 事件。
      */
     function updateIssuerClaimTopics(
         IClaimIssuer _claimIssuer,
@@ -74,43 +73,42 @@ interface IClaimIssuersRegistry {
     ) external;
 
     /**
-     *  @dev Function for getting all the claim claim issuers stored.
-     *  @return array of all claim issuers registered.
+     * @dev 获取所有存储的声明发行者。
+     * @return 所有注册的声明发行者数组。
      */
     function getClaimIssuers() external view returns (IClaimIssuer[] memory);
 
     /**
-     *  @dev Function for getting all the claim issuer allowed for a given claim topic.
-     *  @param claimTopic the claim topic to get the claim issuers for.
-     *  @return array of all claim issuer addresses that are allowed for the given claim topic.
+     * @dev 获取特定声明主题的所有声明发行者。
+     * @param claimTopic 要获取声明发行者的声明主题。
+     * @return 允许为给定声明主题发出声明的所有声明发行者地址数组。
      */
     function getClaimIssuersForClaimTopic(
         uint256 claimTopic
     ) external view returns (IClaimIssuer[] memory);
 
     /**
-     *  @dev Checks if the ClaimIssuer contract is claim
-     *  @param _issuer the address of the ClaimIssuer contract
-     *  @return true if the issuer is claim, false otherwise.
+     * @dev 检查 ClaimIssuer 合约是否是声明发行者。
+     * @param _issuer ClaimIssuer 合约地址。
+     * @return 如果发行人是声明发行者，则返回 true，否则返回 false。
      */
     function isClaimIssuer(IClaimIssuer _issuer) external view returns (bool);
 
     /**
-     *  @dev Function for getting all the claim topic of claim claim issuer
-     *  Requires the provided ClaimIssuer contract to be registered in the claim issuers registry.
-     *  @param _claimIssuer the claim issuer concerned.
-     *  @return The set of claim topics that the claim issuer is allowed to emit
+     * @dev 获取声明发行者允许发出的所有声明主题。
+     * 要求提供的 ClaimIssuer 合约已在声明发行者注册表中注册。
+     * @param _claimIssuer 相关的声明发行者。
+     * @return 声明发行者被允许发出的声明主题集。
      */
     function getClaimIssuerClaimTopics(
         IClaimIssuer _claimIssuer
     ) external view returns (uint256[] memory);
 
     /**
-     *  @dev Function for checking if the claim claim issuer is allowed
-     *  to emit a certain claim topic
-     *  @param _issuer the address of the claim issuer's ClaimIssuer contract
-     *  @param _claimTopic the Claim Topic that has to be checked to know if the `issuer` is allowed to emit it
-     *  @return true if the issuer is claim for this claim topic.
+     * @dev 检查声明发行者是否被允许发出某个声明主题。
+     * @param _issuer 声明发行者的 ClaimIssuer 合约地址。
+     * @param _claimTopic 要检查的声明主题，以确定 `issuer` 是否被允许发出它。
+     * @return 如果发行人对于这个声明主题是声明发行者，则返回 true。
      */
     function hasClaimTopic(
         IClaimIssuer _issuer,

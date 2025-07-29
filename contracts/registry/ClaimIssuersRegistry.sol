@@ -1,46 +1,45 @@
-// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.17;
 
 import "@onchain-id/solidity/contracts/interface/IClaimIssuer.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./interface/IClaimIssuersRegistry.sol";
 
-/// @title ERC-3643 - ClaimIssuersRegistry
-/// @dev This contract maintains a registry of claim issuers and their associated claim topics for the ERC-3643 standard.
+// @title ERC-3643 - 声明发行者注册表
+// @dev 此合约维护一个声明发行者及其关联的声明主题的注册表，用于ERC-3643标准。
 contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
-    /// @dev Array containing all ClaimIssuers identity contract address.
+    // @dev 存储所有声明发行者的数组。
     IClaimIssuer[] private _claimIssuers;
 
-    /// @dev Mapping between a claim issuer address and its corresponding claimTopics.
+    // @dev 映射声明发行者地址与其对应的声明主题。
     mapping(IClaimIssuer => uint256[]) private _claimIssuerClaimTopics;
 
-    /// @dev Mapping between a claim topic and the allowed claim issuers for it.
+    // @dev 映射声明主题与允许发出该主题的声明发行者。
     mapping(uint256 => IClaimIssuer[]) private _claimTopicToClaimIssuers;
 
-    /// @notice Adds a claim issuer to the Claim Issuers Registry.
-    /// @param _claimIssuer The address of the claim issuer.
-    /// @param _claimTopics An array of claim topics associated with the claim issuer.
-    /// Requirements:
-    /// - The caller must be the owner of the contract.
-    /// - The claim issuer address must not be zero.
-    /// - The claim issuer must not already exist in the registry.
-    /// - The claim topics array must not be empty.
-    /// - It is recommended to add a reasonable number of claim issuers at once.
-    /// Emits a ClaimIssuerAdded event.
+    // @notice 将声明发行者添加到声明发行者注册表中。
+    // @param _claimIssuer 声明发行者的地址。
+    // @param _claimTopics 与声明发行者关联的声明主题数组。
+    // 要求:
+    // - 调用者必须是合约的所有者。
+    // - 声明发行者地址不能为零地址。
+    // - 声明发行者不能已经在注册表中存在。
+    // - 声明主题数组不能为空。
+    // - 建议一次性添加合理的声明发行者数量。
+    // 触发 ClaimIssuerAdded 事件。
     function addClaimIssuer(
         IClaimIssuer _claimIssuer,
         uint256[] calldata _claimTopics
     ) external onlyOwner {
         require(
             address(_claimIssuer) != address(0),
-            "ERC-3643: Invalid zero address"
+            unicode"ERC-3643: 无效的零地址"
         );
         require(
             _claimIssuerClaimTopics[_claimIssuer].length == 0,
-            "ERC-3643: Issuer already exists"
+            unicode"ERC-3643: 发行者已存在"
         );
         uint length = _claimTopics.length;
-        require(length != 0, "ERC-3643: Empty claim topics");
+        require(length != 0, unicode"ERC-3643: 空的声明主题");
 
         _claimIssuers.push(_claimIssuer);
         _claimIssuerClaimTopics[_claimIssuer] = _claimTopics;
@@ -55,16 +54,16 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         emit ClaimIssuerAdded(_claimIssuer, _claimTopics);
     }
 
-    /// @notice Removes a claim issuer from the Claim Issuers Registry.
-    /// @param _claimIssuer The address of the claim issuer to be removed.
-    /// Requirements:
-    /// - The caller must be the owner of the contract.
-    /// - The claim issuer must exist in the registry.
-    /// Emits a ClaimIssuerRemoved event.
+    // @notice 从声明发行者注册表中移除声明发行者。
+    // @param _claimIssuer 要移除的声明发行者的地址。
+    // 要求:
+    // - 调用者必须是合约的所有者。
+    // - 声明发行者必须存在于注册表中。
+    // 触发 ClaimIssuerRemoved 事件。
     function removeClaimIssuer(IClaimIssuer _claimIssuer) external onlyOwner {
         uint claimIssuerTopicsLength = _claimIssuerClaimTopics[_claimIssuer]
             .length;
-        require(claimIssuerTopicsLength != 0, "ERC-3643: Not a claim issuer");
+        require(claimIssuerTopicsLength != 0, unicode"ERC-3643: 不是声明发行者");
         uint256 claimIssuerlength = _claimIssuers.length;
         for (uint256 i = 0; i < claimIssuerlength; ) {
             if (_claimIssuers[i] == _claimIssuer) {
@@ -86,22 +85,22 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         emit ClaimIssuerRemoved(_claimIssuer);
     }
 
-    /// @notice Updates the claim topics associated with a claim issuer.
-    /// @param _claimIssuer The address of the claim issuer.
-    /// @param _claimTopics An array of claim topics to be associated with the claim issuer.
-    /// Requirements:
-    /// - The caller must be the owner of the contract.
-    /// - The claim issuer must exist in the registry.
-    /// - The claim topics array must not be empty.
-    /// Emits a ClaimTopicsUpdated event.
+    // @notice 更新与声明发行者关联的声明主题。
+    // @param _claimIssuer 声明发行者的地址。
+    // @param _claimTopics 要与声明发行者关联的声明主题数组。
+    // 要求:
+    // - 调用者必须是合约的所有者。
+    // - 声明发行者必须存在于注册表中。
+    // - 声明主题数组不能为空。
+    // 触发 ClaimTopicsUpdated 事件。
     function updateIssuerClaimTopics(
         IClaimIssuer _claimIssuer,
         uint256[] calldata _claimTopics
     ) external onlyOwner {
-        require(_claimTopics.length != 0, "ERC-3643: No claim topics");
+        require(_claimTopics.length != 0, unicode"ERC-3643: 没有声明主题");
         uint claimIssuerTopicsLength = _claimIssuerClaimTopics[_claimIssuer]
             .length;
-        require(claimIssuerTopicsLength != 0, "ERC-3643: Not a claim issuer");
+        require(claimIssuerTopicsLength != 0, unicode"ERC-3643: 不是声明发行者");
 
         _updateIssuerAcrossAllTopics(_claimIssuer);
 
@@ -110,43 +109,43 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         emit ClaimTopicsUpdated(_claimIssuer, _claimTopics);
     }
 
-    /// @notice Returns an array of all claim issuers in the registry.
-    /// @return A memory array of claim issuers.
+    // @notice 返回注册表中所有声明发行者的数组。
+    // @return 内存中的声明发行者数组。
     function getClaimIssuers() external view returns (IClaimIssuer[] memory) {
         return _claimIssuers;
     }
 
-    /// @notice Returns an array of all claim issuers associated with a specific claim topic.
-    /// @param claimTopic The claim topic to find associated claim issuers for.
-    /// @return A memory array of claim issuers.
+    // @notice 返回与特定声明主题关联的所有声明发行者的数组。
+    // @param claimTopic 要查找关联声明发行者的声明主题。
+    // @return 内存中的声明发行者数组。
     function getClaimIssuersForClaimTopic(
         uint256 claimTopic
     ) external view returns (IClaimIssuer[] memory) {
         return _claimTopicToClaimIssuers[claimTopic];
     }
 
-    /// @notice Checks if an address is a claim issuer in the registry.
-    /// @param _issuer The address to check.
-    /// @return True if the address is a claim issuer, false otherwise.
+    // @notice 检查地址是否是注册表中的声明发行者。
+    // @param _issuer 要检查的地址。
+    // @return 如果地址是声明发行者，则返回 true，否则返回 false。
     function isClaimIssuer(IClaimIssuer _issuer) external view returns (bool) {
         return _isClaimIssuer(_issuer);
     }
 
-    /// @notice Returns an array of claim topics associated with a specific claim issuer.
-    /// @param _claimIssuer The claim issuer to find associated claim topics for.
-    /// @return A memory array of claim topics.
+    // @notice 返回与特定声明发行者关联的所有声明主题的数组。
+    // @param _claimIssuer 要查找关联声明主题的声明发行者。
+    // @return 内存中的声明主题数组。
     function getClaimIssuerClaimTopics(
         IClaimIssuer _claimIssuer
     ) external view returns (uint256[] memory) {
-        require(_isClaimIssuer(_claimIssuer), "ERC-3643: Issuer doesn't exist");
+        require(_isClaimIssuer(_claimIssuer), unicode"ERC-3643: 发行者不存在");
         return _claimIssuerClaimTopics[_claimIssuer];
     }
 
-    /// @notice Checks if a claim issuer has a specific claim topic.
-    /// @dev This function checks if a specific claim topic is associated with a claim issuer.
-    /// @param _issuer The claim issuer to check.
-    /// @param _claimTopic The claim topic to check.
-    /// @return bool True if the claim issuer has the claim topic, otherwise false.
+    // @notice 检查声明发行者是否具有特定的声明主题。
+    // @dev 此函数检查特定的声明主题是否与声明发行者相关联。
+    // @param _issuer 要检查的声明发行者。
+    // @param _claimTopic 要检查的声明主题。
+    // @return bool 如果声明发行者具有该声明主题，则返回 true，否则返回 false。
     function hasClaimTopic(
         IClaimIssuer _issuer,
         uint256 _claimTopic
@@ -164,9 +163,9 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         return false;
     }
 
-    /// @dev Removes a claim issuer from all associated claim topics.
-    /// @param claimIssuer The claim issuer to be removed.
-    /// @param length The number of claim topics associated with the claim issuer.
+    // @dev 从所有关联的声明主题中移除声明发行者。
+    // @param claimIssuer 要移除的声明发行者。
+    // @param length 与声明发行者关联的声明主题的数量。
     function _removeClaimIssuerFromAllClaimTopics(
         IClaimIssuer claimIssuer,
         uint length
@@ -181,9 +180,9 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         }
     }
 
-    /// @dev Updates a claim issuer across all associated claim topics.
-    ///      The function removes the claim issuer from each topic, and then adds it back.
-    /// @param claimIssuer The claim issuer to be updated.
+    // @dev 更新声明发行者在所有关联的声明主题中的信息。
+    //      函数会从每个主题中移除声明发行者，然后重新添加它。
+    // @param claimIssuer 要更新的声明发行者。
     function _updateIssuerAcrossAllTopics(IClaimIssuer claimIssuer) private {
         uint256[] memory claimTopics = _claimIssuerClaimTopics[claimIssuer];
         uint length = claimTopics.length;
@@ -199,11 +198,10 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         }
     }
 
-    /// @dev Removes a claim issuer from a specific claim topic.
-    ///      The function identifies and replaces the claim issuer with the last element in the list
-    ///      then removes the last element, effectively removing the issuer from the list.
-    /// @param claimIssuer The claim issuer to be removed.
-    /// @param claimTopic The claim topic identifier from which the issuer is to be removed.
+    // @dev 从特定的声明主题中移除声明发行者。
+    //      函数会识别并替换列表中的声明发行者，然后移除最后一个元素，从而有效地从列表中移除发行人。
+    // @param claimIssuer 要移除的声明发行者。
+    // @param claimTopic 要从中移除发行者的声明主题标识符。
     function _removeIssuerFromTopic(
         IClaimIssuer claimIssuer,
         uint claimTopic
@@ -227,9 +225,9 @@ contract ClaimIssuersRegistry is IClaimIssuersRegistry, Ownable {
         }
     }
 
-    /// @dev Checks if an address is a claim issuer.
-    /// @param _issuer The address to check.
-    /// @return bool Returns true if the address is a claim issuer, and false otherwise.
+    // @dev 检查地址是否是声明发行者。
+    // @param _issuer 要检查的地址。
+    // @return bool 如果地址是声明发行者，则返回 true，否则返回 false。
     function _isClaimIssuer(IClaimIssuer _issuer) private view returns (bool) {
         return (_claimIssuerClaimTopics[_issuer].length != 0);
     }

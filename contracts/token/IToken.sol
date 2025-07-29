@@ -1,40 +1,39 @@
-// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.17;
 
 import "../registry/interface/IIdentityRegistry.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-/// @dev interface
+// @dev 接口定义
 interface IToken is IERC20 {
-    /// events
+    // 事件定义
 
     /**
-     *  this event is emitted when the onchainID  is updated.
-     *  the event is emitted by the token init function and by the setOnchainID function
-     *  `_newOnchainID` is the address of the onchainID of the token
+     * 当链上ID（onchainID）被更新时触发此事件。
+     * 该事件由token的初始化函数和setOnchainID函数触发
+     * `_newOnchainID` 是token的链上ID地址
      */
     event UpdatedOnchainID(address indexed _newOnchainID);
 
     /**
-     *  this event is emitted when the IdentityRegistry has been set for the token
-     *  the event is emitted by the token constructor and by the setIdentityRegistry function
-     *  `_identityRegistry` is the address of the Identity Registry of the token
+     * 当为token设置身份注册表（IdentityRegistry）时触发此事件
+     * 该事件由token的构造函数和setIdentityRegistry函数触发
+     * `_identityRegistry` 是token的身份注册表地址
      */
     event IdentityRegistryAdded(address indexed _identityRegistry);
 
     /**
-     *  this event is emitted when the Compliance has been set for the token
-     *  the event is emitted by the token constructor and by the setCompliance function
-     *  `_compliance` is the address of the Compliance contract of the token
+     * 当为token设置合规合约（Compliance）时触发此事件
+     * 该事件由token的构造函数和setCompliance函数触发
+     * `_compliance` 是token的合规合约地址
      */
     event ComplianceAdded(address indexed _compliance);
 
     /**
-     *  this event is emitted when an investor successfully recovers his tokens
-     *  the event is emitted by the recoveryAddress function
-     *  `_lostWallet` is the address of the wallet that the investor lost access to
-     *  `_newWallet` is the address of the wallet that the investor provided for the recovery
-     *  `_investorOnchainID` is the address of the onchainID of the investor who asked for a recovery
+     * 当投资者成功找回其代币时触发此事件
+     * 该事件由recoveryAddress函数触发
+     * `_lostWallet` 是投资者丢失访问权限的钱包地址
+     * `_newWallet` 是投资者提供的用于找回代币的新钱包地址
+     * `_investorOnchainID` 是请求找回代币的投资者的链上ID地址
      */
     event RecoverySuccess(
         address indexed _lostWallet,
@@ -43,13 +42,13 @@ interface IToken is IERC20 {
     );
 
     /**
-     *  this event is emitted when the wallet of an investor is frozen or unfrozen
-     *  the event is emitted by setAddressFrozen and batchSetAddressFrozen functions
-     *  `_userAddress` is the wallet of the investor that is concerned by the freezing status
-     *  `_isFrozen` is the freezing status of the wallet
-     *  if `_isFrozen` equals `true` the wallet is frozen after emission of the event
-     *  if `_isFrozen` equals `false` the wallet is unfrozen after emission of the event
-     *  `_owner` is the address of the agent who called the function to freeze the wallet
+     * 当投资者的钱包被冻结或解冻时触发此事件
+     * 该事件由setAddressFrozen和batchSetAddressFrozen函数触发
+     * `_userAddress` 是受冻结状态影响的投资者钱包地址
+     * `_isFrozen` 是钱包的冻结状态
+     * 若`_isFrozen`为`true`，则事件触发后钱包被冻结
+     * 若`_isFrozen`为`false`，则事件触发后钱包被解冻
+     * `_owner` 是调用函数冻结钱包的代理地址
      */
     event AddressFrozen(
         address indexed _userAddress,
@@ -58,59 +57,65 @@ interface IToken is IERC20 {
     );
 
     /**
-     *  this event is emitted when a certain amount of tokens is frozen on a wallet
-     *  the event is emitted by freezePartialTokens and batchFreezePartialTokens functions
-     *  `_userAddress` is the wallet of the investor that is concerned by the freezing status
-     *  `_amount` is the amount of tokens that are frozen
+     * 当钱包上一定数量的代币被冻结时触发此事件
+     * 该事件由freezePartialTokens和batchFreezePartialTokens函数触发
+     * `_userAddress` 是受冻结影响的投资者钱包地址
+     * `_amount` 是被冻结的代币数量
      */
-    event TokensFrozen(address indexed _userAddress, uint256 _amount);
+    event TokensFrozen(
+        address indexed _userAddress,
+        uint256 _amount
+    );
 
     /**
-     *  this event is emitted when a certain amount of tokens is unfrozen on a wallet
-     *  the event is emitted by unfreezePartialTokens and batchUnfreezePartialTokens functions
-     *  `_userAddress` is the wallet of the investor that is concerned by the freezing status
-     *  `_amount` is the amount of tokens that are unfrozen
+     * 当钱包上一定数量的代币被解冻时触发此事件
+     * 该事件由unfreezePartialTokens和batchUnfreezePartialTokens函数触发
+     * `_userAddress` 是受解冻影响的投资者钱包地址
+     * `_amount` 是被解冻的代币数量
      */
-    event TokensUnfrozen(address indexed _userAddress, uint256 _amount);
+    event TokensUnfrozen(
+        address indexed _userAddress,
+        uint256 _amount
+    );
 
     /**
-     *  @dev sets the onchain ID of the token
-     *  @param _onchainID the address of the onchain ID to set
-     *  Only the owner of the token smart contract can call this function
-     *  emits a `UpdatedTokenInformation` event
+     * @dev 设置代币的链上ID
+     * @param _onchainID 要设置的链上ID地址
+     * 仅代币智能合约的所有者可调用此函数
+     * 触发`UpdatedTokenInformation`事件
      */
     function setOnchainID(address _onchainID) external;
 
     /**
-     *  @dev pauses the token contract, when contract is paused investors cannot transfer tokens anymore
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `Paused` event
+     * @dev 暂停代币合约，合约暂停后投资者无法再转移代币
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`Paused`事件
      */
     function pause() external;
 
     /**
-     *  @dev unpauses the token contract, when contract is unpaused investors can transfer tokens
-     *  if their wallet is not blocked & if the amount to transfer is <= to the amount of free tokens
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits an `Unpaused` event
+     * @dev 解除代币合约的暂停状态，合约解除暂停后：
+     * 若投资者的钱包未被冻结且可转移金额≤可用代币量（未冻结代币），则可转移代币
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`Unpaused`事件
      */
     function unpause() external;
 
     /**
-     *  @dev sets an address frozen status for this token.
-     *  @param _userAddress The address for which to update frozen status
-     *  @param _freeze Frozen status of the address
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits an `AddressFrozen` event
+     * @dev 设置某个地址在此代币中的冻结状态
+     * @param _userAddress 要更新冻结状态的地址
+     * @param _freeze 地址的冻结状态
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`AddressFrozen`事件
      */
     function setAddressFrozen(address _userAddress, bool _freeze) external;
 
     /**
-     *  @dev freezes token amount specified for given address.
-     *  @param _userAddress The address for which to update frozen tokens
-     *  @param _amount Amount of Tokens to be frozen
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `TokensFrozen` event
+     * @dev 为指定地址冻结特定数量的代币
+     * @param _userAddress 要更新冻结代币的地址
+     * @param _amount 要冻结的代币数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`TokensFrozen`事件
      */
     function freezePartialTokens(
         address _userAddress,
@@ -118,11 +123,11 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev unfreezes token amount specified for given address
-     *  @param _userAddress The address for which to update frozen tokens
-     *  @param _amount Amount of Tokens to be unfrozen
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `TokensUnfrozen` event
+     * @dev 为指定地址解冻特定数量的代币
+     * @param _userAddress 要更新解冻代币的地址
+     * @param _amount 要解冻的代币数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`TokensUnfrozen`事件
      */
     function unfreezePartialTokens(
         address _userAddress,
@@ -130,37 +135,34 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev sets the Identity Registry for the token
-     *  @param _identityRegistry the address of the Identity Registry to set
-     *  Only the owner of the token smart contract can call this function
-     *  emits an `IdentityRegistryAdded` event
+     * @dev 为代币设置身份注册表
+     * @param _identityRegistry 要设置的身份注册表地址
+     * 仅代币智能合约的所有者可调用此函数
+     * 触发`IdentityRegistryAdded`事件
      */
     function setIdentityRegistry(address _identityRegistry) external;
 
     /**
-     *  @dev sets the compliance contract of the token
-     *  @param _compliance the address of the compliance contract to set
-     *  Only the owner of the token smart contract can call this function
-     *  calls bindToken on the compliance contract
-     *  emits a `ComplianceAdded` event
+     * @dev 设置代币的合规合约
+     * @param _compliance 要设置的合规合约地址
+     * 仅代币智能合约的所有者可调用此函数
+     * 调用合规合约上的bindToken函数
+     * 触发`ComplianceAdded`事件
      */
     function setCompliance(address _compliance) external;
 
     /**
-     *  @dev force a transfer of tokens between 2 whitelisted wallets
-     *  In case the `from` address has not enough free tokens (unfrozen tokens)
-     *  but has a total balance higher or equal to the `amount`
-     *  the amount of frozen tokens is reduced in order to have enough free tokens
-     *  to proceed the transfer, in such a case, the remaining balance on the `from`
-     *  account is 100% composed of frozen tokens post-transfer.
-     *  Require that the `to` address is a verified address,
-     *  @param _from The address of the sender
-     *  @param _to The address of the receiver
-     *  @param _amount The number of tokens to transfer
-     *  @return `true` if successful and revert if unsuccessful
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `TokensUnfrozen` event if `_amount` is higher than the free balance of `_from`
-     *  emits a `Transfer` event
+     * @dev 强制在两个白名单钱包之间转移代币
+     * 若`from`地址的可用代币（未冻结代币）不足，但总余额≥`amount`：
+     * 则减少冻结代币数量以确保有足够的可用代币完成转移，此时转移后`from`地址的剩余余额将100%由冻结代币组成
+     * 要求`to`地址是已验证地址
+     * @param _from 发送者地址
+     * @param _to 接收者地址
+     * @param _amount 要转移的代币数量
+     * @return 成功返回`true`，失败则回滚
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 若`_amount`大于`_from`的可用余额，触发`TokensUnfrozen`事件
+     * 触发`Transfer`事件
      */
     function forcedTransfer(
         address _from,
@@ -169,42 +171,37 @@ interface IToken is IERC20 {
     ) external returns (bool);
 
     /**
-     *  @dev mint tokens on a wallet
-     *  Improved version of default mint method. Tokens can be minted
-     *  to an address if only it is a verified address as per the security token.
-     *  @param _to Address to mint the tokens to.
-     *  @param _amount Amount of tokens to mint.
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `Transfer` event
+     * @dev 在钱包上铸造代币
+     * 对默认铸造方法的改进。仅当地址是安全代币的已验证地址时，才可向该地址铸造代币
+     * @param _to 代币铸造的目标地址
+     * @param _amount 要铸造的代币数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`Transfer`事件
      */
     function mint(address _to, uint256 _amount) external;
 
     /**
-     *  @dev burn tokens on a wallet
-     *  In case the `account` address has not enough free tokens (unfrozen tokens)
-     *  but has a total balance higher or equal to the `value` amount
-     *  the amount of frozen tokens is reduced in order to have enough free tokens
-     *  to proceed the burn, in such a case, the remaining balance on the `account`
-     *  is 100% composed of frozen tokens post-transaction.
-     *  @param _userAddress Address to burn the tokens from.
-     *  @param _amount Amount of tokens to burn.
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `TokensUnfrozen` event if `_amount` is higher than the free balance of `_userAddress`
-     *  emits a `Transfer` event
+     * @dev 在钱包上销毁代币
+     * 若`account`地址的可用代币（未冻结代币）不足，但总余额≥`value`数量：
+     * 则减少冻结代币数量以确保有足够的可用代币完成销毁，此时销毁后`account`地址的剩余余额将100%由冻结代币组成
+     * @param _userAddress 要从中销毁代币的地址
+     * @param _amount 要销毁的代币数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 若`_amount`大于`_userAddress`的可用余额，触发`TokensUnfrozen`事件
+     * 触发`Transfer`事件
      */
     function burn(address _userAddress, uint256 _amount) external;
 
     /**
-     *  @dev recovery function used to force transfer tokens from a
-     *  lost wallet to a new wallet for an investor.
-     *  @param _lostWallet the wallet that the investor lost
-     *  @param _newWallet the newly provided wallet on which tokens have to be transferred
-     *  @param _investorOnchainID the onchainID of the investor asking for a recovery
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits a `TokensUnfrozen` event if there is some frozen tokens on the lost wallet if the recovery process is successful
-     *  emits a `Transfer` event if the recovery process is successful
-     *  emits a `RecoverySuccess` event if the recovery process is successful
-     *  emits a `RecoveryFails` event if the recovery process fails
+     * @dev 用于投资者将代币从丢失的钱包强制转移到新钱包的恢复函数
+     * @param _lostWallet 投资者丢失的钱包
+     * @param _newWallet 投资者提供的用于接收转移代币的新钱包
+     * @param _investorOnchainID 请求恢复的投资者的链上ID
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 若恢复成功且丢失的钱包上有冻结代币，触发`TokensUnfrozen`事件
+     * 若恢复成功，触发`Transfer`事件
+     * 若恢复成功，触发`RecoverySuccess`事件
+     * 若恢复失败，触发`RecoveryFails`事件
      */
     function recoveryAddress(
         address _lostWallet,
@@ -213,15 +210,14 @@ interface IToken is IERC20 {
     ) external returns (bool);
 
     /**
-     *  @dev function allowing to issue transfers in batch
-     *  Require that the msg.sender and `to` addresses are not frozen.
-     *  Require that the total value should not exceed available balance.
-     *  Require that the `to` addresses are all verified addresses,
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_toList.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _toList The addresses of the receivers
-     *  @param _amounts The number of tokens to transfer to the corresponding receiver
-     *  emits _toList.length `Transfer` events
+     * @dev 允许批量执行转移的函数
+     * 要求msg.sender和`to`地址未被冻结
+     * 要求总价值不超过可用余额
+     * 要求`to`地址均为已验证地址
+     * 重要提示：若`_toList.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _toList 接收者地址列表
+     * @param _amounts 对应接收者的代币转移数量
+     * 触发`_toList.length`个`Transfer`事件
      */
     function batchTransfer(
         address[] calldata _toList,
@@ -229,17 +225,16 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev function allowing to issue forced transfers in batch
-     *  Require that `_amounts[i]` should not exceed available balance of `_fromList[i]`.
-     *  Require that the `_toList` addresses are all verified addresses
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_fromList.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _fromList The addresses of the senders
-     *  @param _toList The addresses of the receivers
-     *  @param _amounts The number of tokens to transfer to the corresponding receiver
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits `TokensUnfrozen` events if `_amounts[i]` is higher than the free balance of `_fromList[i]`
-     *  emits _fromList.length `Transfer` events
+     * @dev 允许批量执行强制转移的函数
+     * 要求`_amounts[i]`不超过`_fromList[i]`的可用余额
+     * 要求`_toList`地址均为已验证地址
+     * 重要提示：若`_fromList.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _fromList 发送者地址列表
+     * @param _toList 接收者地址列表
+     * @param _amounts 对应接收者的代币转移数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 若`_amounts[i]`大于`_fromList[i]`的可用余额，触发`TokensUnfrozen`事件
+     * 触发`_fromList.length`个`Transfer`事件
      */
     function batchForcedTransfer(
         address[] calldata _fromList,
@@ -248,14 +243,13 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev function allowing to mint tokens in batch
-     *  Require that the `_toList` addresses are all verified addresses
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_toList.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _toList The addresses of the receivers
-     *  @param _amounts The number of tokens to mint to the corresponding receiver
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits _toList.length `Transfer` events
+     * @dev 允许批量铸造代币的函数
+     * 要求`_toList`地址均为已验证地址
+     * 重要提示：若`_toList.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _toList 接收者地址列表
+     * @param _amounts 对应接收者的代币铸造数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`_toList.length`个`Transfer`事件
      */
     function batchMint(
         address[] calldata _toList,
@@ -263,14 +257,13 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev function allowing to burn tokens in batch
-     *  Require that the `_userAddresses` addresses are all verified addresses
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _userAddresses The addresses of the wallets concerned by the burn
-     *  @param _amounts The number of tokens to burn from the corresponding wallets
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits _userAddresses.length `Transfer` events
+     * @dev 允许批量销毁代币的函数
+     * 要求`_userAddresses`地址均为已验证地址
+     * 重要提示：若`_userAddresses.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _userAddresses 受销毁影响的钱包地址列表
+     * @param _amounts 对应钱包的代币销毁数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`_userAddresses.length`个`Transfer`事件
      */
     function batchBurn(
         address[] calldata _userAddresses,
@@ -278,13 +271,12 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev function allowing to set frozen addresses in batch
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _userAddresses The addresses for which to update frozen status
-     *  @param _freeze Frozen status of the corresponding address
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits _userAddresses.length `AddressFrozen` events
+     * @dev 允许批量设置冻结地址的函数
+     * 重要提示：若`_userAddresses.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _userAddresses 要更新冻结状态的地址列表
+     * @param _freeze 对应地址的冻结状态
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`_userAddresses.length`个`AddressFrozen`事件
      */
     function batchSetAddressFrozen(
         address[] calldata _userAddresses,
@@ -292,13 +284,12 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev function allowing to freeze tokens partially in batch
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _userAddresses The addresses on which tokens need to be frozen
-     *  @param _amounts the amount of tokens to freeze on the corresponding address
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits _userAddresses.length `TokensFrozen` events
+     * @dev 允许批量部分冻结代币的函数
+     * 重要提示：若`_userAddresses.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _userAddresses 需要冻结代币的地址列表
+     * @param _amounts 对应地址要冻结的代币数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`_userAddresses.length`个`TokensFrozen`事件
      */
     function batchFreezePartialTokens(
         address[] calldata _userAddresses,
@@ -306,13 +297,12 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     *  @dev function allowing to unfreeze tokens partially in batch
-     *  IMPORTANT : THIS TRANSACTION COULD EXCEED GAS LIMIT IF `_userAddresses.length` IS TOO HIGH,
-     *  USE WITH CARE OR YOU COULD LOSE TX FEES WITH AN "OUT OF GAS" TRANSACTION
-     *  @param _userAddresses The addresses on which tokens need to be unfrozen
-     *  @param _amounts the amount of tokens to unfreeze on the corresponding address
-     *  This function can only be called by a wallet set as agent of the token
-     *  emits _userAddresses.length `TokensUnfrozen` events
+     * @dev 允许批量部分解冻代币的函数
+     * 重要提示：若`_userAddresses.length`过大，此交易可能超过Gas限制，使用时需谨慎，否则可能因"Gas不足"损失交易费用
+     * @param _userAddresses 需要解冻代币的地址列表
+     * @param _amounts 对应地址要解冻的代币数量
+     * 此函数仅可由被设置为代币代理的钱包调用
+     * 触发`_userAddresses.length`个`TokensUnfrozen`事件
      */
     function batchUnfreezePartialTokens(
         address[] calldata _userAddresses,
@@ -320,67 +310,57 @@ interface IToken is IERC20 {
     ) external;
 
     /**
-     * @dev Returns the number of decimals used to get its user representation.
-     * For example, if `decimals` equals `2`, a balance of `505` tokens should
-     * be displayed to a user as `5,05` (`505 / 1 ** 2`).
-     *
-     * Tokens usually opt for a value of 18, imitating the relationship between
-     * Ether and Wei.
-     *
-     * NOTE: This information is only used for _display_ purposes: it in
-     * no way affects any of the arithmetic of the contract, including
-     * balanceOf() and transfer().
+     * @dev 返回代币的小数位数，用于用户展示
+     * 例如，若`decimals`等于`2`，则505个代币应向用户显示为5.05（505 / 10^2）
+     * 注意：此信息仅用于_展示_目的，绝不影响合约的任何算术运算，包括balanceOf()和transfer()
      */
     function decimals() external view returns (uint8);
 
     /**
-     * @dev Returns the name of the token.
+     * @dev 返回代币名称
      */
     function name() external view returns (string memory);
 
     /**
-     * @dev Returns the address of the onchainID of the token.
-     * the onchainID of the token gives all the information available
-     * about the token and is managed by the token issuer or his agent.
+     * @dev 返回代币的链上ID地址
+     * 代币的链上ID包含所有关于代币的可用信息，由代币发行方或其代理管理
      */
     function onchainID() external view returns (address);
 
     /**
-     * @dev Returns the symbol of the token, usually a shorter version of the
-     * name.
+     * @dev 返回代币符号，通常是名称的缩写
      */
     function symbol() external view returns (string memory);
 
     /**
-     * @dev Returns the TREX version of the token.
-     * current version is 3.0.0
+     * @dev 返回代币的TREX版本
+     * 当前版本为3.0.0
      */
     function version() external view returns (string memory);
 
     /**
-     *  @dev Returns the Identity Registry linked to the token
+     * @dev 返回与代币关联的身份注册表
      */
     function identityRegistry() external view returns (IIdentityRegistry);
 
     /**
-     *  @dev Returns the Compliance contract linked to the token
+     * @dev 返回与代币关联的合规合约
      */
     function compliance() external view returns (address);
 
     /**
-     *  @dev Returns the freezing status of a wallet
-     *  if isFrozen returns `true` the wallet is frozen
-     *  if isFrozen returns `false` the wallet is not frozen
-     *  isFrozen returning `true` doesn't mean that the balance is free, tokens could be blocked by
-     *  a partial freeze or the whole token could be blocked by pause
-     *  @param _userAddress the address of the wallet on which isFrozen is called
+     * @dev 返回钱包的冻结状态
+     * 若isFrozen返回`true`，则钱包被冻结
+     * 若isFrozen返回`false`，则钱包未被冻结
+     * isFrozen返回`true`并不意味着余额可用，代币可能被部分冻结或整个代币可能被暂停功能冻结
+     * @param _userAddress 调用isFrozen的钱包地址
      */
     function isFrozen(address _userAddress) external view returns (bool);
 
     /**
-     *  @dev Returns the amount of tokens that are partially frozen on a wallet
-     *  the amount of frozen tokens is always <= to the total balance of the wallet
-     *  @param _userAddress the address of the wallet on which getFrozenTokens is called
+     * @dev 返回钱包上被部分冻结的代币数量
+     * 冻结的代币数量始终≤钱包的总余额
+     * @param _userAddress 调用getFrozenTokens的钱包地址
      */
     function getFrozenTokens(
         address _userAddress
