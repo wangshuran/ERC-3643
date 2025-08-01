@@ -20,7 +20,7 @@ export async function deployIdentityProxy(
     signer
   ).deploy(implementationAuthority, managementKey);
 
-  return ethers.getContractAt("Identity", identity.address, signer);
+  return ethers.getContractAt("IIdentity", identity.address, signer);
 }
 
 export async function deployFullSuiteFixture() {
