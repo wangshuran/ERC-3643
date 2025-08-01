@@ -299,6 +299,9 @@ export async function deployFullSuiteFixture() {
   await token.connect(tokenAgent).mint(aliceWallet.address, 1000);
   await token.connect(tokenAgent).mint(bobWallet.address, 500);
 
+  const aliceBalance = await token.balanceOf(aliceWallet.address);
+  console.log(`Alice 钱包的代币余额: ${aliceBalance.toString()}`);
+
   return {
     accounts: {
       deployer,

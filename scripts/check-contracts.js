@@ -7,7 +7,7 @@ async function main() {
 
   // 合约地址列表
   const contracts = [
-    { name: "合约", address: "0x5ffd3ca2DFaC8Af6315ACC86Adc01a336eD0f2Dc" },
+    { name: "合约", address: "0xC0BC34628BAc69b291978CA64063756084bECB22" },
   ];
 
   // 遍历验证合约
