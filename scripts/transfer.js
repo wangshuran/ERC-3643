@@ -2,9 +2,9 @@ const { ethers } = require("hardhat");
 
 async function main() {
   // 1. 配置转账参数
-  const tokenAddress = "0x7F0417b4314380D09e157c5c737CbC26Ad8cd74b"; // 代币合约地址
-  const fromAddress = "0xab598391CF668b62f4D2fCF5F7c80F3b2cEf5b82"; // Alice 钱包地址
-  const toAddress = "0x5d98897f3C25Cc18533deC883E64B5CF664DbDE4"; // Bob 钱包地址
+  const tokenAddress = "0xDC1fF6de2DD774B5f8e5Ef3A143DE65d34D57B10"; // 代币合约地址
+  const fromAddress = "0x064cF0f5CF2360b7a013F3953f3DB4A3D9Ec16AC"; // Alice 钱包地址
+  const toAddress = "0x27462e7E90af2305c82f63dd2178F7255a4F255e"; // Bob 钱包地址
   const amount = 100; // 转账数量
 
   // 2. 遍历所有签名者，找到 Alice 的签名

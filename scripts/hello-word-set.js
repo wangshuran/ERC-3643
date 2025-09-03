@@ -2,7 +2,7 @@ const hre = require("hardhat");
 
 async function main() {
     // 1. 配置参数
-    const contractAddress = "0xcB0510e0EC5d63222c8F9FD2D340aF1B9a5b9917";
+    const contractAddress = "0x7Df21351Cec71acc12125da2CA2Db372414e27e1";
     const newGreeting = "Hello, Blockchain Learner!";
 
     // 2. 加载合约实例

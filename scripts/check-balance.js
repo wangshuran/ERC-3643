@@ -5,9 +5,9 @@ async function main() {
   console.log("使用账户查询:", deployer.address);
 
   // 代币合约地址
-  const tokenAddress = "0x7F0417b4314380D09e157c5c737CbC26Ad8cd74b";
+  const tokenAddress = "0xDC1fF6de2DD774B5f8e5Ef3A143DE65d34D57B10";
   // Alice 钱包地址
-  const aliceWalletAddress = "0xab598391CF668b62f4D2fCF5F7c80F3b2cEf5b82";
+  const aliceWalletAddress = "0x27462e7E90af2305c82f63dd2178F7255a4F255e";
 
   try {
     // 连接代币合约
