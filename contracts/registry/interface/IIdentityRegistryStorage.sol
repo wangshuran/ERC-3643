@@ -67,13 +67,13 @@ interface IIdentityRegistryStorage {
     // functions
 
     /**
-     *  @dev adds an identity contract corresponding to a user address in the storage.
-     *  Requires that the user doesn't have an identity contract already registered.
-     *  This function can only be called by an address set as agent of the smart contract
-     *  @param _userAddress The address of the user
-     *  @param _identity The address of the user's identity contract
-     *  @param _country The country of the investor
-     *  emits `IdentityStored` event
+     *  @dev 向存储中添加与用户地址对应的身份合约。
+     *  要求用户尚未注册身份合约。
+     *  此函数只能由设置为智能合约代理的地址调用
+     *  @param _userAddress 用户的地址
+     *  @param _identity 用户身份合约的地址
+     *  @param _country 投资者的国家
+     *  触发 `IdentityStored` 事件
      */
     function addIdentityToStorage(
         address _userAddress,
@@ -82,21 +82,21 @@ interface IIdentityRegistryStorage {
     ) external;
 
     /**
-     *  @dev Removes an user from the storage.
-     *  Requires that the user have an identity contract already deployed that will be deleted.
-     *  This function can only be called by an address set as agent of the smart contract
-     *  @param _userAddress The address of the user to be removed
-     *  emits `IdentityUnstored` event
+     *  @dev 从存储中移除用户。
+     *  要求用户已部署将被删除的身份合约。
+     *  此函数只能由设置为智能合约代理的地址调用
+     *  @param _userAddress 要移除的用户地址
+     *  触发 `IdentityUnstored` 事件
      */
     function removeIdentityFromStorage(address _userAddress) external;
 
     /**
-     *  @dev Updates the country corresponding to a user address.
-     *  Requires that the user should have an identity contract already deployed that will be replaced.
-     *  This function can only be called by an address set as agent of the smart contract
-     *  @param _userAddress The address of the user
-     *  @param _country The new country of the user
-     *  emits `CountryModified` event
+     *  @dev 更新与用户地址对应的国家。
+     *  要求用户已部署将被替换的身份合约。
+     *  此函数只能由设置为智能合约代理的地址调用
+     *  @param _userAddress 用户的地址
+     *  @param _country 用户的新国家
+     *  触发 `CountryModified` 事件
      */
     function modifyStoredInvestorCountry(
         address _userAddress,
@@ -104,13 +104,13 @@ interface IIdentityRegistryStorage {
     ) external;
 
     /**
-     *  @dev Updates an identity contract corresponding to a user address.
-     *  Requires that the user address should be the owner of the identity contract.
-     *  Requires that the user should have an identity contract already deployed that will be replaced.
-     *  This function can only be called by an address set as agent of the smart contract
-     *  @param _userAddress The address of the user
-     *  @param _identity The address of the user's new identity contract
-     *  emits `IdentityModified` event
+     *  @dev 更新与用户地址对应的身份合约。
+     *  要求用户地址应为身份合约的所有者。
+     *  要求用户已部署将被替换的身份合约。
+     *  此函数只能由设置为智能合约代理的地址调用
+     *  @param _userAddress 用户的地址
+     *  @param _identity 用户新身份合约的地址
+     *  触发 `IdentityModified` 事件
      */
     function modifyStoredIdentity(
         address _userAddress,
@@ -118,24 +118,24 @@ interface IIdentityRegistryStorage {
     ) external;
 
     /**
-     *  @notice Adds an identity registry as agent of the Identity Registry Storage Contract.
-     *  This function can only be called by the wallet set as owner of the smart contract
-     *  This function adds the identity registry to the list of identityRegistries linked to the storage contract
-     *  cannot bind more than 300 IR to 1 IRS
-     *  @param _identityRegistry The identity registry address to add.
+     *  @notice 添加身份注册表作为身份注册存储合约的代理。
+     *  此函数只能由设置为智能合约所有者的钱包调用
+     *  此函数将身份注册表添加到链接到存储合约的身份注册表列表中
+     *  不能将超过300个IR绑定到1个IRS
+     *  @param _identityRegistry 要添加的身份注册表地址。
      */
     function bindIdentityRegistry(address _identityRegistry) external;
 
     /**
-     *  @notice Removes an identity registry from being agent of the Identity Registry Storage Contract.
-     *  This function can only be called by the wallet set as owner of the smart contract
-     *  This function removes the identity registry from the list of identityRegistries linked to the storage contract
-     *  @param _identityRegistry The identity registry address to remove.
+     *  @notice 移除身份注册表作为身份注册存储合约的代理。
+     *  此函数只能由设置为智能合约所有者的钱包调用
+     *  此函数从链接到存储合约的身份注册表列表中移除身份注册表
+     *  @param _identityRegistry 要移除的身份注册表地址。
      */
     function unbindIdentityRegistry(address _identityRegistry) external;
 
     /**
-     *  @dev Returns the identity registries linked to the storage contract
+     *  @dev 返回链接到存储合约的身份注册表
      */
     function linkedIdentityRegistries()
         external
@@ -143,16 +143,16 @@ interface IIdentityRegistryStorage {
         returns (address[] memory);
 
     /**
-     *  @dev Returns the onchainID of an investor.
-     *  @param _userAddress The wallet of the investor
+     *  @dev 返回投资者的链上ID。
+     *  @param _userAddress 投资者的钱包
      */
     function storedIdentity(
         address _userAddress
     ) external view returns (IIdentity);
 
     /**
-     *  @dev Returns the country code of an investor.
-     *  @param _userAddress The wallet of the investor
+     *  @dev 返回投资者的国家代码。
+     *  @param _userAddress 投资者的钱包
      */
     function storedInvestorCountry(
         address _userAddress
